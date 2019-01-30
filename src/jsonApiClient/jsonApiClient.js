@@ -10,50 +10,62 @@ export default apiUrl => (type, resource, params) => {
     const options = {
         headers: { "Access-Control-Allow-Origin": "*" }
       };
-      switch (type) {
-          case 'GET_LIST':
+      if (type == 'GET_LIST') {
           method = 'get';
           finalUrl = baseUrl + resource;
-          break;
-
-          case 'GET_ONE':
+      }
+      else if(type == 'GET_ONE'){
           method = 'get';
           finalUrl = baseUrl + resource;
-          break;
-
-          case 'CREATE':
-          method = 'post';
-          options.data = { nombre: params.data.nombre,
-            apellido: params.data.apellido,
-            dni: params.data.dni,
-            cuit: params.data.cuit
-         };
-         finalUrl = baseUrl + resource;
-          break;
-
-          case 'UPDATE':
-          method = 'put';
-          options.data = { nombre: params.data.nombre,
-            apellido: params.data.apellido,
-            dni: params.data.dni,
-            cuit: params.data.cuit
-          };
-          finalUrl = baseUrl + resource + '/' + params.data.id;
-          break;
-
-          case 'DELETE':
-          method = 'delete';
-          finalUrl = baseUrl + resource + '/' + params.id;
-          console.log(finalUrl);
-          break;
-
-          case 'DELETE_MANY':
-          method = 'delete';
-          finalUrl = baseUrl + resource + '/' + params.ids[0];
-
-          default:
-          break;
         }
+
+        else if(type == 'CREATE'){
+            method = 'post';
+            if(resource == 'personasFisicas'){
+                options.data = { nombre: params.data.nombre,
+                    apellido: params.data.apellido,
+                    dni: params.data.dni,
+                    cuit: params.data.cuit
+                };
+            }else{
+                options.data = { 
+                    anioFundacion: params.data.anioFundacion,
+                    cuit: params.data.cuit,
+                    razonSocial: params.data.razonSocial
+                };
+            }
+            finalUrl = baseUrl + resource;
+        }
+
+          else if(type == 'UPDATE'){
+              method = 'put';
+              if(resource == 'personasFisicas'){
+                  options.data = { nombre: params.data.nombre,
+                    apellido: params.data.apellido,
+                    dni: params.data.dni,
+                    cuit: params.data.cuit
+                }
+                }else {
+                    options.data = { 
+                        anioFundacion: params.data.anioFundacion,
+                        cuit: params.data.cuit,
+                        razonSocial: params.data.razonSocial
+                    }; 
+                }
+                finalUrl = baseUrl + resource + '/' + params.data.id;
+            }
+          else if(type == 'DELETE'){
+
+              method = 'delete';
+              finalUrl = baseUrl + resource + '/' + params.id;
+              console.log(finalUrl);
+            }
+
+          else if('DELETE_MANY'){
+              method = 'delete';
+              finalUrl = baseUrl + resource + '/' + params.ids[0];
+        }
+
     options.method = method;
     console.log("options: ");
     console.log(options);
@@ -105,6 +117,48 @@ export default apiUrl => (type, resource, params) => {
             else {
              return response;   
             }
+        } else if(resource == "personasJuridicas"){
+            if(type == "GET_LIST"){
+            var length = response.data._embedded.personasJuridicas.length;
+            var listData = {
+                data: response.data._embedded.personasJuridicas.map(
+                value => Object.assign({
+                    id: value._links.self.href.split("/personasJuridicas/")[1],
+                    anioFundacion: value.anioFundacion,
+                    cuit: value.cuit,
+                    razonSocial: value.razonSocial
+                },value.attributes
+                )),
+                total: length
+            }
+            return listData;
+            
+        }else if(type == 'GET_ONE'){
+            var result = {
+                data: {
+                    id:0,
+                    anioFundacion: response.anioFundacion,
+                    cuit: response.cuit,
+                    razonSocial: response.razonSocial
+                }
+            }
+            return result;
+        }  
+        else if (type == 'CREATE') {
+            var result = {  
+                data: {
+                    id: response.data._links.self.href.split("/personasJuridicas/")[1],
+                    anioFundacion: response.anioFundacion,
+                    cuit: response.cuit,
+                    razonSocial: response.razonSocial
+                }  
+            }
+            return result;
+        } 
+        else {
+         return response;   
+        }
+
         }
       }); 
 }
