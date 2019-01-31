@@ -44,7 +44,7 @@ export const PersonasJuridicasCreate = (props) => (
     <Create {...props}>
         <SimpleForm>
             <TextInput source="razonSocial" validate={[required(), maxLength(200, "Razon social demasiado larga")]}/>
-            <TextInput source="anioFundacion" validate={[required(), maxLength(4, "Anio fundacion demasiado largo")]} />
+            <TextInput source="anioFundacion" validate={[required(), number("El anio de fundacion debe ser un valor numerico"), maxLength(4, "Anio fundacion demasiado largo")]} />
             <TextInput source="cuit" validate={[required(), number("El cuit debe ser un valor numerico")]} />
         </SimpleForm>
     </Create>
@@ -54,7 +54,7 @@ export const PersonasJuridicasEdit = (props) => (
     <Edit title="Editar Personas Juridicas" {...props}>
          <SimpleForm>
             <TextInput source="razonSocial" validate={[required(), maxLength(200, "Razon social demasiado larga")]}/>
-            <TextInput source="anioFundacion" validate={[required(), maxLength(4, "Anio fundacion demasiado largo")]} />
+            <TextInput source="anioFundacion" validate={[required(), number("El anio de fundacion debe ser un valor numerico"), maxLength(4, "Anio fundacion demasiado largo")]} />
             <TextInput source="cuit" validate={[required(), number("El cuit debe ser un valor numerico")]} />
         </SimpleForm>
     </Edit>
